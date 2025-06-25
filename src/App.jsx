@@ -208,10 +208,10 @@ function App() {
         }}>
         <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_60%_0,_#ffe599_15%,_transparent_55%)]"></div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{letterSpacing: ".01em"}}>
-          Clayton Estate Smart Home Selector
+          The Clayton Estate Smart Home Selection
         </h1>
         <p className="text-yellow-100 mt-1 text-sm italic font-serif">
-          Experience the future of home living. Select with confidence.
+          Smart home living selected with confidence
         </p>
       </header>
 
