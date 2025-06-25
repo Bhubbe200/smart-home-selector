@@ -1,8 +1,5 @@
 import { useState } from "react";
 
-// --- OPTIONAL: In index.html in <head> add this line ---
-// <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-
 // Tooltip for jargon/acronyms (hover/tap/focus)
 function Tooltip({ text, children }) {
   return (
@@ -52,14 +49,14 @@ function DeviceCard({ option, isSelected, onSelect }) {
   );
 }
 
-// AV options data, including Sonos!
+// AV options data, using /public/images paths
 const AV_DEVICE_OPTIONS = {
   preamp: [
     {
       id: "marantz7706",
       brand: "Marantz",
       model: "AV7706",
-      image: "https://images.crutchfieldonline.com/ImageHandler/trim/1200/1200/products/2020/40/642/g642AV7706-F.jpg",
+      image: "/images/av7706.jpg",
       price: 2300,
       description: (
         <>
@@ -73,7 +70,7 @@ const AV_DEVICE_OPTIONS = {
       id: "denonx6700h",
       brand: "Denon",
       model: "AVR-X6700H",
-      image: "https://www.denon.com/-/media/images/products/av-receivers/x6700h/dn_avrx6700h_e2_bk_002_lo.png",
+      image: "/images/denonx6700h.png",
       price: 3000,
       description: (
         <>
@@ -89,7 +86,7 @@ const AV_DEVICE_OPTIONS = {
       id: "monoprice16ch",
       brand: "Monoprice",
       model: "16-Channel Amplifier",
-      image: "https://images.monoprice.com/productlargeimages/155642.jpg",
+      image: "/images/monoprice16ch.jpg",
       price: 1300,
       description: (
         <>
@@ -104,7 +101,7 @@ const AV_DEVICE_OPTIONS = {
       id: "audiocontrol2660",
       brand: "AudioControl",
       model: "Architect Model 2660",
-      image: "https://www.audiocontrol.com/wp-content/uploads/2017/05/2660-front.jpg",
+      image: "/images/audiocontrol2660.jpg",
       price: 2800,
       description: (
         <>
@@ -120,7 +117,7 @@ const AV_DEVICE_OPTIONS = {
       id: "sonosamp",
       brand: "Sonos",
       model: "Amp",
-      image: "https://www.sonos.com/on/demandware.static/-/Sites-sonos-master/default/dw60b292da/images/amp/Amp_1.jpg",
+      image: "/images/sonosamp.jpg",
       price: 699,
       description: (
         <>
@@ -137,7 +134,7 @@ const AV_DEVICE_OPTIONS = {
       id: "atlona16x16",
       brand: "Atlona",
       model: "AT-UHD-PRO3-16M",
-      image: "https://atlona.com/wp-content/uploads/2016/07/AT-UHD-PRO3-1616M-Front-1920x626.jpg",
+      image: "/images/atlona16x16.jpg",
       price: 4000,
       description: (
         <>
@@ -152,7 +149,7 @@ const AV_DEVICE_OPTIONS = {
       id: "wyrestorm16x16",
       brand: "Wyrestorm",
       model: "MXV-1616-H2A",
-      image: "https://www.wyrestorm.com/wp-content/uploads/2020/10/MXV-1616-H2A_Front.jpg",
+      image: "/images/wyrestorm16x16.jpg",
       price: 8000,
       description: (
         <>
@@ -183,6 +180,10 @@ function App() {
   const [selectedAmp, setSelectedAmp] = useState(null);
   const [selectedMatrix, setSelectedMatrix] = useState(null);
 
+  // For nav flow
+  const navOrder = NAV_PAGES.map((p) => p.id);
+  const pageIdx = navOrder.indexOf(page);
+
   // Helper for summary: get selected option from section
   function getOption(section, id) {
     return AV_DEVICE_OPTIONS[section]?.find((o) => o.id === id) || null;
@@ -198,9 +199,34 @@ function App() {
   if (amp) systemTotal += amp.price * numAmps;
   if (matrix) systemTotal += matrix.price;
 
+  // Navigation helpers
+  function goNext() {
+    if (pageIdx < navOrder.length - 1) setPage(navOrder[pageIdx + 1]);
+  }
+  function goBack() {
+    if (pageIdx > 0) setPage(navOrder[pageIdx - 1]);
+  }
+
+  // Helper to generate summary for email
+  function generateSummaryText() {
+    const parts = [];
+    if (preamp) parts.push(`Preamp: ${preamp.brand} ${preamp.model} ($${preamp.price})`);
+    if (amp) parts.push(`Amp: ${amp.brand} ${amp.model} x${numAmps} ($${amp.price} each, $${amp.price * numAmps} total)`);
+    if (matrix) parts.push(`Matrix: ${matrix.brand} ${matrix.model} ($${matrix.price})`);
+    parts.push(`System Total: $${systemTotal.toLocaleString()}`);
+    return parts.join('\n');
+  }
+
+  // Create mailto link for Send to Technician
+  function getMailtoLink() {
+    const subject = encodeURIComponent("Smart Home Selector - My System Selections");
+    const body = encodeURIComponent(generateSummaryText());
+    return `mailto:bruce.hubbell@live.com?subject=${subject}&body=${body}`;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans" style={{fontFamily: "Montserrat, ui-sans-serif, system-ui"}}>
-      {/* Header - luxury aesthetic, gold accent */}
+    <div className="min-h-screen bg-gray-900 text-white font-sans pb-20" style={{fontFamily: "Montserrat, ui-sans-serif, system-ui"}}>
+      {/* Header */}
       <header className="relative p-3 mb-2 rounded-b-2xl overflow-hidden shadow-lg"
         style={{
           background: "linear-gradient(120deg, #1a2733 0%, #252a36 100%)",
@@ -208,14 +234,14 @@ function App() {
         }}>
         <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_60%_0,_#ffe599_15%,_transparent_55%)]"></div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{letterSpacing: ".01em"}}>
-          The Clayton Estate Smart Home Selection
+          Clayton Estate Smart Home Selector
         </h1>
         <p className="text-yellow-100 mt-1 text-sm italic font-serif">
-          Smart home living selected with confidence
+          Experience the future of home living. Select with confidence.
         </p>
       </header>
 
-      {/* Navigation bar - gold accent */}
+      {/* Top Nav bar */}
       <nav className="flex flex-wrap gap-1 px-2 pb-2 border-b border-yellow-400/50">
         {NAV_PAGES.map((p) => (
           <button
@@ -263,7 +289,7 @@ function App() {
                   key={option.id}
                   option={option}
                   isSelected={selectedAmp === option.id}
-                      onSelect={() => setSelectedAmp(selectedAmp === option.id ? null : option.id)}
+                  onSelect={() => setSelectedAmp(selectedAmp === option.id ? null : option.id)}
                 />
               ))}
             </div>
@@ -298,7 +324,7 @@ function App() {
                   key={option.id}
                   option={option}
                   isSelected={selectedMatrix === option.id}
-                      onSelect={() => setSelectedMatrix(selectedMatrix === option.id ? null : option.id)}
+                  onSelect={() => setSelectedMatrix(selectedMatrix === option.id ? null : option.id)}
                 />
               ))}
             </div>
@@ -376,8 +402,8 @@ function App() {
               </div>
             </div>
             <div className="mt-3 text-yellow-200 text-xs text-center">
-              <b>Next:</b> Email or print this page, or tap “back” to adjust your selections.<br/>
-              (More sharing/export features coming soon!)
+              <b>Next:</b> Tap “Send to Technician” below to email your selections.<br/>
+              (Or use the Back button to adjust your choices.)
             </div>
           </div>
         )}
@@ -390,6 +416,36 @@ function App() {
         {page === "cameras" && <div><h2 className="text-base">POE Cameras Page (Coming Soon)</h2></div>}
         {page === "touchscreens" && <div><h2 className="text-base">In-Wall Touchscreens Page (Coming Soon)</h2></div>}
       </main>
+
+      {/* BOTTOM NAVIGATION BAR */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-gray-950/95 border-t border-yellow-300 flex justify-between items-center px-4 py-2 shadow-[0_-2px_10px_rgba(0,0,0,0.15)] font-semibold"
+        style={{fontFamily: "Montserrat, ui-sans-serif, system-ui"}}>
+        {pageIdx > 0 ? (
+          <button
+            className="px-4 py-2 rounded-full bg-yellow-400 text-yellow-900 shadow hover:bg-yellow-300 transition"
+            onClick={goBack}
+          >
+            Back
+          </button>
+        ) : <div className="w-20" />} {/* Placeholder to balance flex */}
+        
+        {page !== "summary" ? (
+          <button
+            className="px-4 py-2 rounded-full bg-yellow-400 text-yellow-900 shadow hover:bg-yellow-300 transition"
+            onClick={goNext}
+          >
+            Next
+          </button>
+        ) : (
+          <a
+            href={getMailtoLink()}
+            className="px-4 py-2 rounded-full bg-green-400 text-green-900 shadow hover:bg-green-300 transition font-semibold"
+            style={{ textDecoration: "none" }}
+          >
+            Send to Technician
+          </a>
+        )}
+      </nav>
     </div>
   );
 }
