@@ -1,4 +1,5 @@
 import { useState } from "react";
+import LightingPage from "./LightingPage";
 
 // Tooltip for jargon/acronyms
 function Tooltip({ text, children }) {
@@ -14,13 +15,29 @@ function Tooltip({ text, children }) {
   );
 }
 
-// Device card: compact gold-accent
+// Unified Buy Now button style (used on AV and Lighting pages)
+function BuyNowButton({ url }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-block px-3 py-1 rounded-lg bg-yellow-400 text-yellow-900 font-bold text-xs shadow border border-yellow-900 hover:bg-yellow-300 hover:scale-105 active:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"
+      onClick={e => e.stopPropagation()} // prevents card click event
+      style={{ minWidth: "80px", textAlign: "center" }}
+    >
+      Buy Now
+    </a>
+  );
+}
+
+// Device card for AV section, matching LightingPage buy button
 function DeviceCard({ option, isSelected, onSelect }) {
   return (
     <div
       className={`rounded-xl shadow transition-all p-3 bg-gray-800/95 border
         ${isSelected ? "border-yellow-400 ring-2 ring-yellow-300 shadow-yellow-200/40 scale-105" : "border-gray-700 hover:border-yellow-300 hover:shadow-yellow-200/30"}
-        cursor-pointer flex flex-col w-full max-w-xs mx-auto min-h-[230px] font-sans`}
+        cursor-pointer flex flex-col w-full max-w-xs mx-auto min-h-[250px] font-sans`}
       onClick={onSelect}
       tabIndex={0}
       aria-pressed={isSelected}
@@ -38,18 +55,61 @@ function DeviceCard({ option, isSelected, onSelect }) {
       <div className="text-yellow-200 font-semibold mb-1 text-base">${option.price.toLocaleString()}</div>
       <div className="text-gray-100 text-xs mb-1 leading-tight">{option.description}</div>
       <div className="text-xs text-gray-400 italic mb-1">{option.reasoning}</div>
-      <button
-        onClick={(e) => { e.stopPropagation(); onSelect(); }}
-        className={`mt-auto px-3 py-1 rounded-md font-bold shadow transition
-          ${isSelected ? "bg-yellow-400 text-yellow-900" : "bg-yellow-800 hover:bg-yellow-400 hover:text-yellow-900 text-white"} text-xs`}
-      >
-        {isSelected ? "Selected" : "Select"}
-      </button>
+      <div className="flex gap-2 mt-2 mb-1">
+        {option.buyLink && <BuyNowButton url={option.buyLink} />}
+        <button
+          onClick={e => { e.stopPropagation(); onSelect(); }}
+          className={`px-3 py-1 rounded-md font-bold shadow transition text-xs
+            ${isSelected ? "bg-yellow-400 text-yellow-900" : "bg-yellow-800 hover:bg-yellow-400 hover:text-yellow-900 text-white"}`}
+        >
+          {isSelected ? "Selected" : "Select"}
+        </button>
+      </div>
     </div>
   );
 }
 
-// Device options with updated prices (Summer 2025)
+// AV Info/Education area for top of page
+function AVInfoSection() {
+  return (
+    <div className="mb-4 bg-gray-800/80 rounded-xl shadow p-4 border border-yellow-300/40">
+      <h2 className="text-lg font-bold mb-2 text-yellow-200">Your Home’s Nerve Center</h2>
+      <ul className="list-disc list-inside text-sm text-yellow-100 space-y-1">
+        <li>
+          <span className="underline decoration-dotted decoration-yellow-300 cursor-help" title="AV receiver: the heart of home audio/video, handling sound, switching, and sometimes video distribution.">
+            AV receivers and processors
+          </span>{" "}
+          bring all your music, movies, and smart home together—switching sources, powering speakers, and enabling surround sound.
+        </li>
+        <li>
+          <span className="underline decoration-dotted decoration-yellow-300 cursor-help" title="The amplifier provides the power to drive your speakers, ensuring clear, distortion-free sound even at high volumes.">
+            Amplifiers
+          </span>{" "}
+          ensure you get room-filling, dynamic sound, no matter how big your space.
+        </li>
+        <li>
+          <span className="underline decoration-dotted decoration-yellow-300 cursor-help" title="Matrix switch: routes video sources (like streaming boxes or cable) to any TV in the house—no need for separate boxes per room.">
+            Matrix switchers
+          </span>{" "}
+          let you watch what you want, where you want—no more fighting over the living room TV.
+        </li>
+        <li>
+          <span className="underline decoration-dotted decoration-yellow-300 cursor-help" title="Rack mounting: professional way to organize, cool, and protect your equipment in one place.">
+            Rack-mount gear
+          </span>{" "}
+          means a cleaner, quieter, more reliable system that grows with your needs.
+        </li>
+        <li>
+          <span className="underline decoration-dotted decoration-yellow-300 cursor-help" title="Value: The best systems maximize performance for your budget, with no wasted features or corners cut.">
+            Value
+          </span>{" "}
+          is about performance, flexibility, and ease of use—not just specs.
+        </li>
+      </ul>
+    </div>
+  );
+}
+
 const AV_DEVICE_OPTIONS = {
   preamp: [
     {
@@ -57,7 +117,8 @@ const AV_DEVICE_OPTIONS = {
       brand: "Marantz",
       model: "AV7706",
       image: "/images/av7706.jpg",
-      price: 3200, // Confirmed MSRP
+      price: 3200,
+      buyLink: "https://www.marantz.com/en-us/product/av-separates/av7706",
       description: (
         <>
           Pro-grade processor with <Tooltip text="11 main speaker outputs, plus two for subwoofers">11.2 channels</Tooltip>, support for <Tooltip text="Ultra HD video, 4x the detail of 1080p">8K HDMI</Tooltip>, and renowned Marantz sound. Best value for big homes when paired with dedicated amps.
@@ -71,7 +132,8 @@ const AV_DEVICE_OPTIONS = {
       brand: "Denon",
       model: "AVR-X6700H",
       image: "/images/denonx6700h.png",
-      price: 2299, // Latest street price (MSRP $3199, discounted)
+      price: 2299,
+      buyLink: "https://www.crutchfield.com/p_033X6700H/Denon-AVR-X6700H.html",
       description: (
         <>
           Feature-rich receiver, drives up to 13 speakers, great for theaters/main zones. Advanced <Tooltip text="Automatic speaker calibration system to tune sound for your room">room correction (Audyssey XT32)</Tooltip>, full 8K HDMI.
@@ -87,7 +149,8 @@ const AV_DEVICE_OPTIONS = {
       brand: "Monoprice",
       model: "16-Channel Amplifier",
       image: "/images/monoprice16ch.jpg",
-      price: 1300, // Estimate based on Monolith line
+      price: 1300,
+      buyLink: "https://www.monoprice.com/product?p_id=155642",
       description: (
         <>
           Affordable, reliable, <Tooltip text="Can be installed in a standard AV rack for neat wiring and cooling">rack-mountable</Tooltip> amp. Drives 16 pairs (32 channels) of speakers. Stack as needed for your system.
@@ -102,7 +165,8 @@ const AV_DEVICE_OPTIONS = {
       brand: "AudioControl",
       model: "Architect Model 2660",
       image: "/images/audiocontrol2660.jpg",
-      price: 3489, // Latest MSRP
+      price: 3489,
+      buyLink: "https://www.audiocontrol.com/home-audio/multi-zone-amplifiers/architect-model-2660/",
       description: (
         <>
           Audiophile amp, 16 channels, smart load balancing, <Tooltip text="Advanced monitoring and adjustments to optimize sound in each room">room-by-room DSP</Tooltip>.
@@ -117,7 +181,8 @@ const AV_DEVICE_OPTIONS = {
       brand: "Sonos",
       model: "Amp",
       image: "/images/sonosamp.jpg",
-      price: 699, // Confirmed MSRP
+      price: 699,
+      buyLink: "https://www.sonos.com/en-us/shop/amp",
       description: (
         <>
           <Tooltip text="Each Sonos Amp powers a pair of speakers (stereo)">Wireless streaming amp</Tooltip> with built-in music, voice assistant, and app control. Each unit powers one zone (2 speakers).
@@ -134,7 +199,8 @@ const AV_DEVICE_OPTIONS = {
       brand: "Atlona",
       model: "AT-UHD-PRO3-16M",
       image: "/images/atlona16x16.jpg",
-      price: 17000, // MSRP (confirmed from Atlona site)
+      price: 17000,
+      buyLink: "https://atlona.com/product/at-uhd-pro3-1616m/",
       description: (
         <>
           Cost-effective <Tooltip text="Switches multiple HDMI sources to multiple TVs, letting you watch any source on any screen.">16x16 HDMI matrix switch</Tooltip> for routing all your video. Works with all control systems.
@@ -149,7 +215,8 @@ const AV_DEVICE_OPTIONS = {
       brand: "Wyrestorm",
       model: "MXV-1616-H2A",
       image: "/images/wyrestorm16x16.jpg",
-      price: 8000, // Estimate (similar models MSRP $7k, varies by config)
+      price: 8000,
+      buyLink: "https://www.wyrestorm.com/product/mxv-1616-h2a/",
       description: (
         <>
           Top build quality, full <Tooltip text="High Dynamic Range—richer colors and contrast">HDR</Tooltip> support, robust IR/RS232 control for integration.
@@ -173,17 +240,14 @@ const NAV_PAGES = [
   { id: "summary", label: "Summary" },
 ];
 
-function App() {
+export default function App() {
   const [page, setPage] = useState("av");
   const [selectedPreamp, setSelectedPreamp] = useState(null);
   const [selectedAmp, setSelectedAmp] = useState(null);
   const [selectedMatrix, setSelectedMatrix] = useState(null);
+  const [pairs, setPairs] = useState(54);
+  const [tvs, setTVs] = useState(16);
 
-  // NEW: User input for devices
-  const [pairs, setPairs] = useState(54);   // Speaker pairs
-  const [tvs, setTVs] = useState(16);       // TVs
-
-  // For nav flow
   const navOrder = NAV_PAGES.map((p) => p.id);
   const pageIdx = navOrder.indexOf(page);
 
@@ -195,18 +259,13 @@ function App() {
   const preamp = getOption("preamp", selectedPreamp);
   const amp = getOption("amp", selectedAmp);
   const matrix = getOption("matrix", selectedMatrix);
-
-  // Calculate how many amps/matrices you need
   let numAmps = amp ? Math.ceil(pairs / amp.max_pairs) : 0;
   let numMatrix = matrix ? (tvs > matrix.max_tvs ? Math.ceil(tvs / matrix.max_tvs) : 1) : 0;
-
-  // Total price (preamp + amps + matrix)
   let systemTotal = 0;
   if (preamp) systemTotal += preamp.price;
   if (amp) systemTotal += amp.price * numAmps;
   if (matrix) systemTotal += matrix.price * numMatrix;
 
-  // Navigation helpers
   function goNext() {
     if (pageIdx < navOrder.length - 1) setPage(navOrder[pageIdx + 1]);
   }
@@ -239,7 +298,6 @@ function App() {
           background: "linear-gradient(120deg, #1a2733 0%, #252a36 100%)",
           borderBottom: "3px solid #ffe599"
         }}>
-        <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_60%_0,_#ffe599_15%,_transparent_55%)]"></div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ letterSpacing: ".01em" }}>
           Clayton Estate Smart Home Selector
         </h1>
@@ -266,14 +324,10 @@ function App() {
       </nav>
 
       <main className="p-2">
+        {/* AV PAGE */}
         {page === "av" && (
           <div>
-            <h2 className="text-xl font-bold mb-1">A/V System Builder</h2>
-            <p className="text-yellow-200 mb-2 text-sm">
-              Select a <b>Preamp/Processor/Receiver</b>, <b>Amplifier</b>, and <b>HDMI Matrix Switch</b>.<br />
-              <span className="underline decoration-dotted decoration-yellow-300">Underlined terms</span> can be tapped for explanations.
-            </p>
-            {/* User Device Controls */}
+            <AVInfoSection />
             <div className="flex gap-4 flex-wrap mb-3">
               <div>
                 <label className="text-yellow-100 text-xs block font-semibold" htmlFor="pairs">Speaker Pairs</label>
@@ -326,7 +380,6 @@ function App() {
                 />
               ))}
             </div>
-            {/* Amp system sizing feedback */}
             {selectedAmp && (
               <div className="mb-2 text-yellow-200 text-sm">
                 {(() => {
@@ -361,7 +414,6 @@ function App() {
                 />
               ))}
             </div>
-            {/* Matrix warning */}
             {selectedMatrix && (
               <div className="mb-2 text-yellow-200 text-sm">
                 {(() => {
@@ -378,6 +430,9 @@ function App() {
             )}
           </div>
         )}
+
+        {/* LIGHTING PAGE */}
+        {page === "lighting" && <LightingPage />}
 
         {/* SUMMARY PAGE */}
         {page === "summary" && (
@@ -401,6 +456,7 @@ function App() {
                     <div>
                       <div className="font-bold text-yellow-100">{preamp.brand} {preamp.model}</div>
                       <div className="text-yellow-200 text-xs">${preamp.price.toLocaleString()}</div>
+                      {preamp.buyLink && <BuyNowButton url={preamp.buyLink} />}
                     </div>
                   </div>
                 ) : <div className="text-yellow-100/70 text-xs">No preamp selected.</div>}
@@ -416,6 +472,7 @@ function App() {
                         <div className="font-bold text-yellow-100">{amp.brand} {amp.model}</div>
                         <div className="text-yellow-200 text-xs">${amp.price.toLocaleString()} x {numAmps} units</div>
                         <div className="text-yellow-200 text-xs mt-0.5">Total: <b>${(amp.price * numAmps).toLocaleString()}</b></div>
+                        {amp.buyLink && <BuyNowButton url={amp.buyLink} />}
                       </div>
                     </div>
                     {amp.id === "sonosamp" && (
@@ -434,6 +491,7 @@ function App() {
                       <div className="font-bold text-yellow-100">{matrix.brand} {matrix.model}</div>
                       <div className="text-yellow-200 text-xs">${matrix.price.toLocaleString()} x {numMatrix}</div>
                       <div className="text-yellow-200 text-xs mt-0.5">Total: <b>${(matrix.price * numMatrix).toLocaleString()}</b></div>
+                      {matrix.buyLink && <BuyNowButton url={matrix.buyLink} />}
                     </div>
                   </div>
                 ) : <div className="text-yellow-100/70 text-xs">No matrix selected.</div>}
@@ -451,7 +509,7 @@ function App() {
           </div>
         )}
 
-        {page === "lighting" && <div><h2 className="text-base">LED Lighting Page (Coming Soon)</h2></div>}
+        {/* Placeholders for other pages */}
         {page === "networking" && <div><h2 className="text-base">Networking Page (Coming Soon)</h2></div>}
         {page === "racks" && <div><h2 className="text-base">Equipment Racks Page (Coming Soon)</h2></div>}
         {page === "security" && <div><h2 className="text-base">Security Sensors Page (Coming Soon)</h2></div>}
@@ -490,5 +548,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
