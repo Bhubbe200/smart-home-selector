@@ -10,3 +10,13 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Clayton Estate Smart Home Selector
+
+A luxury, mobile-friendly web app to help clients select the perfect smart home AV and lighting system.  
+Built with React, Tailwind CSS, and ❤️ for people who like the finer things.
+
+## Features
+
+- Real-world AV and audio options, including Sonos
+- Summary page with system price
+- Fun and modern luxury UI
